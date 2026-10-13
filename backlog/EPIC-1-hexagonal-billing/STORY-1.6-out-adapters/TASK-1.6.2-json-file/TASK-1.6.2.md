@@ -2,7 +2,7 @@
 id: TASK-1.6.2
 type: task
 title: "JsonFile репозиторита"
-status: todo
+status: done
 parent: STORY-1.6
 ---
 

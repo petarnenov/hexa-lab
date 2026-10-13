@@ -2,7 +2,7 @@
 id: SUB-1.6.2.3
 type: subtask
 title: "data/accounts.json и data/fee-schedules.json"
-status: todo
+status: done
 parent: TASK-1.6.2
 ---
 

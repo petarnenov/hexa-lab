@@ -2,7 +2,7 @@
 id: SUB-1.6.2.2
 type: subtask
 title: "JsonFileFeeScheduleRepository"
-status: todo
+status: done
 parent: TASK-1.6.2
 ---
 

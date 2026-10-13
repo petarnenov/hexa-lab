@@ -2,7 +2,7 @@
 id: STORY-1.6
 type: story
 title: "Out адаптери"
-status: todo
+status: done
 parent: EPIC-1
 ---
 

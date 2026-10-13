@@ -2,7 +2,7 @@
 id: SUB-1.6.3.1
 type: subtask
 title: "Формат на реда"
-status: todo
+status: done
 parent: TASK-1.6.3
 ---
 

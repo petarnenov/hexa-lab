@@ -2,7 +2,7 @@
 id: TASK-1.6.1
 type: task
 title: "InMemory репозиторита"
-status: todo
+status: done
 parent: STORY-1.6
 ---
 

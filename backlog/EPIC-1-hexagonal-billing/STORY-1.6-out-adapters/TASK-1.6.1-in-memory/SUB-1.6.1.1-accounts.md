@@ -2,7 +2,7 @@
 id: SUB-1.6.1.1
 type: subtask
 title: "InMemoryAccountRepository"
-status: todo
+status: done
 parent: TASK-1.6.1
 ---
 

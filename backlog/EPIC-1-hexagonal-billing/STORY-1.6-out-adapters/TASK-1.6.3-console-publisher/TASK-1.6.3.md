@@ -2,7 +2,7 @@
 id: TASK-1.6.3
 type: task
 title: "ConsoleFeeReportPublisher"
-status: todo
+status: done
 parent: STORY-1.6
 ---
 

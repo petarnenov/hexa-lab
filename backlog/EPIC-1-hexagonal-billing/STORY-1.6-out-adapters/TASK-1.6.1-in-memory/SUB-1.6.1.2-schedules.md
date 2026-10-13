@@ -2,7 +2,7 @@
 id: SUB-1.6.1.2
 type: subtask
 title: "InMemoryFeeScheduleRepository"
-status: todo
+status: done
 parent: TASK-1.6.1
 ---
 
