@@ -2,7 +2,7 @@
 id: SUB-1.4.1.2
 type: subtask
 title: "Поток на execute"
-status: todo
+status: done
 parent: TASK-1.4.1
 ---
 

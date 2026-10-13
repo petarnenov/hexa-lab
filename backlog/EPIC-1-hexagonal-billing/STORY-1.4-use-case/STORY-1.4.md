@@ -2,7 +2,7 @@
 id: STORY-1.4
 type: story
 title: "Use case: изчисли таксите на household"
-status: todo
+status: done
 parent: EPIC-1
 ---
 

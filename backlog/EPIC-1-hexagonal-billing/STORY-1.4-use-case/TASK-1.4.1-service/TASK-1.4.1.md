@@ -2,7 +2,7 @@
 id: TASK-1.4.1
 type: task
 title: "CalculateHouseholdFeesService"
-status: todo
+status: done
 parent: STORY-1.4
 ---
 

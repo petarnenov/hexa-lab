@@ -2,7 +2,7 @@
 id: SUB-1.4.1.3
 type: subtask
 title: "Грешки на use case-а"
-status: todo
+status: done
 parent: TASK-1.4.1
 ---
 

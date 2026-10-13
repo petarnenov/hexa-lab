@@ -2,7 +2,7 @@
 id: SUB-1.4.1.1
 type: subtask
 title: "Конструктор с портове"
-status: todo
+status: done
 parent: TASK-1.4.1
 ---
 
