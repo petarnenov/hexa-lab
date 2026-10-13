@@ -11,3 +11,6 @@ session-report-*.html
 
 # npm run pack output
 hexa.tar.gz
+
+# Playwright MCP session output
+.playwright-mcp/
