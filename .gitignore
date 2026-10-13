@@ -8,3 +8,6 @@ node_modules/
 
 # Generated usage reports (session-report plugin)
 session-report-*.html
+
+# npm run pack output
+hexa.tar.gz

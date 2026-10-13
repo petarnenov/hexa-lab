@@ -11,7 +11,8 @@
     "cli": "tsx src/bootstrap/cli.main.ts",
     "http": "tsx src/bootstrap/http.main.ts",
     "test": "node --import tsx --test \"test/*.test.ts\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pack": "tsx scripts/pack-demo.ts"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
