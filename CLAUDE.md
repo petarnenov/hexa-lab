@@ -33,7 +33,8 @@ backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive  →
 5. **`/opsx:verify`** (по желание) — проверява код срещу spec/design/tasks.
 6. **`/opsx:archive`** — мърджва delta spec-овете в `openspec/specs/`, мести
    change-а в `openspec/changes/archive/`, сменя `status: done` на покритите
-   backlog елементи.
+   backlog елементи. Завършва с кратка ретроспекция за процеса: едно
+   предложение за промяна в `CLAUDE.md`/`openspec/config.yaml` или „няма“.
 7. **`/commit`** — комит след archive (или след apply, ако story-то е голямо).
 8. **`/clear`** — след archive (и commit) потребителят чисти контекста, за да
    започне следващото story на чисто. Claude не може да го направи сам, затова
