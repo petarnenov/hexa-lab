@@ -2,7 +2,7 @@
 id: SUB-1.3.2.2
 type: subtask
 title: "FeeScheduleRepository.ts"
-status: todo
+status: done
 parent: TASK-1.3.2
 ---
 

@@ -2,7 +2,7 @@
 id: SUB-1.3.2.3
 type: subtask
 title: "FeeReportPublisher.ts"
-status: todo
+status: done
 parent: TASK-1.3.2
 ---
 

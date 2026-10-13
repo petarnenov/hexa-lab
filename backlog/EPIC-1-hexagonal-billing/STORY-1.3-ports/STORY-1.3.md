@@ -2,7 +2,7 @@
 id: STORY-1.3
 type: story
 title: "Портове in/out"
-status: todo
+status: done
 parent: EPIC-1
 ---
 

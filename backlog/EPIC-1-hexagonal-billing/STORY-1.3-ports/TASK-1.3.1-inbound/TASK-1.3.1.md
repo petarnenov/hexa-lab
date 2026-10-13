@@ -2,7 +2,7 @@
 id: TASK-1.3.1
 type: task
 title: "Inbound порт"
-status: todo
+status: done
 parent: STORY-1.3
 ---
 

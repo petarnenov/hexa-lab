@@ -2,7 +2,7 @@
 id: TASK-1.3.2
 type: task
 title: "Outbound портове"
-status: todo
+status: done
 parent: STORY-1.3
 ---
 
