@@ -10,8 +10,8 @@ framework-и и без runtime зависимости.
 описва и проследява с OpenSpec. Една OpenSpec change = една STORY от backlog-а.
 
 ```
-backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive
-   (какво)            (план)            (код)           (спецове + done)
+backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive  →  /clear
+   (какво)            (план)            (код)           (спецове + done)   (нов контекст)
 ```
 
 1. **Избери story** от `backlog/README.md` (дървото) — първата със `status: todo`
@@ -27,6 +27,9 @@ backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive
    change-а в `openspec/changes/archive/`, сменя `status: done` на покритите
    backlog елементи.
 6. **`/commit`** — комит след archive (или след apply, ако story-то е голямо).
+7. **`/clear`** — след archive (и commit) потребителят чисти контекста, за да
+   започне следващото story на чисто. Claude не може да го направи сам, затова
+   archive-ът завършва с напомняне за `/clear`.
 
 Останалите команди: `/opsx:explore` (мислене без артефакти), `/opsx:continue`
 (един артефакт наведнъж), `/opsx:ff` (всички артефакти без пауза),
