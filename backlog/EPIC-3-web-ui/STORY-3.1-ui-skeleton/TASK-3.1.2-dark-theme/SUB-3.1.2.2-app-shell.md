@@ -2,7 +2,7 @@
 id: SUB-3.1.2.2
 type: subtask
 title: "App shell"
-status: todo
+status: done
 parent: TASK-3.1.2
 ---
 

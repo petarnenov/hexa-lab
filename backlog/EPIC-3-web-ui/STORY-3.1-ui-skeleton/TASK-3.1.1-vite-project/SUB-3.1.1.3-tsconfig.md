@@ -2,7 +2,7 @@
 id: SUB-3.1.1.3
 type: subtask
 title: "tsconfig.json и .gitignore"
-status: todo
+status: done
 parent: TASK-3.1.1
 ---
 

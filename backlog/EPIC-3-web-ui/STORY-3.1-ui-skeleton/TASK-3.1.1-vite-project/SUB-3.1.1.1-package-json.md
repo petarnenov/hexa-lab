@@ -2,7 +2,7 @@
 id: SUB-3.1.1.1
 type: subtask
 title: "package.json и скриптове"
-status: todo
+status: done
 parent: TASK-3.1.1
 ---
 

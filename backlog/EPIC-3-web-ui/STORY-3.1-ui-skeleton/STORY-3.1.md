@@ -2,7 +2,7 @@
 id: STORY-3.1
 type: story
 title: "Скелет на UI"
-status: todo
+status: done
 parent: EPIC-3
 ---
 

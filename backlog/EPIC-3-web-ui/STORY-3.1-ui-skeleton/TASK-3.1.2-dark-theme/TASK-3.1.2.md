@@ -2,7 +2,7 @@
 id: TASK-3.1.2
 type: task
 title: "Тъмна тема и App shell"
-status: todo
+status: done
 parent: STORY-3.1
 ---
 

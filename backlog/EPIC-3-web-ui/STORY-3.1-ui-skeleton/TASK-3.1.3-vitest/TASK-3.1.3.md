@@ -2,7 +2,7 @@
 id: TASK-3.1.3
 type: task
 title: "Vitest"
-status: todo
+status: done
 parent: STORY-3.1
 ---
 

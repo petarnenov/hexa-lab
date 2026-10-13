@@ -2,7 +2,7 @@
 id: SUB-3.1.1.2
 type: subtask
 title: "vite.config.ts с proxy"
-status: todo
+status: done
 parent: TASK-3.1.1
 ---
 

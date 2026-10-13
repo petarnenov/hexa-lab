@@ -2,7 +2,7 @@
 id: TASK-3.1.1
 type: task
 title: "Vite проект"
-status: todo
+status: done
 parent: STORY-3.1
 ---
 

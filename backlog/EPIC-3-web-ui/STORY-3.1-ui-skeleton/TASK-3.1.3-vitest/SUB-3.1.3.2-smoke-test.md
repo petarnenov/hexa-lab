@@ -2,7 +2,7 @@
 id: SUB-3.1.3.2
 type: subtask
 title: "Smoke тест на App"
-status: todo
+status: done
 parent: TASK-3.1.3
 ---
 

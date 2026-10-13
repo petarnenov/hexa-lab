@@ -2,7 +2,7 @@
 id: SUB-3.1.3.1
 type: subtask
 title: "Setup файл"
-status: todo
+status: done
 parent: TASK-3.1.3
 ---
 

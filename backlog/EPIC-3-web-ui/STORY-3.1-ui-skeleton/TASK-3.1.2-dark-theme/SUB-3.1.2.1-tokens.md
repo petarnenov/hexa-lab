@@ -2,7 +2,7 @@
 id: SUB-3.1.2.1
 type: subtask
 title: "Design tokens"
-status: todo
+status: done
 parent: TASK-3.1.2
 ---
 
