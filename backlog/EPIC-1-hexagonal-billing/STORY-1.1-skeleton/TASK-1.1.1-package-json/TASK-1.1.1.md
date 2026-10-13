@@ -2,7 +2,7 @@
 id: TASK-1.1.1
 type: task
 title: "package.json и скриптове"
-status: todo
+status: done
 parent: STORY-1.1
 ---
 

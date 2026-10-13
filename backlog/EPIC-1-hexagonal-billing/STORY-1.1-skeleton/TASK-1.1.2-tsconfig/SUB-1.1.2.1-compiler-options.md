@@ -2,7 +2,7 @@
 id: SUB-1.1.2.1
 type: subtask
 title: "Compiler options"
-status: todo
+status: done
 parent: TASK-1.1.2
 ---
 

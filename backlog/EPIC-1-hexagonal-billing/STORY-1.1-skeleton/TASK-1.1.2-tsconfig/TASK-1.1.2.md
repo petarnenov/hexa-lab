@@ -2,7 +2,7 @@
 id: TASK-1.1.2
 type: task
 title: "tsconfig.json"
-status: todo
+status: done
 parent: STORY-1.1
 ---
 

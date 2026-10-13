@@ -2,7 +2,7 @@
 id: SUB-1.1.1.2
 type: subtask
 title: "Dev зависимости"
-status: todo
+status: done
 parent: TASK-1.1.1
 ---
 

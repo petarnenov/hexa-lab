@@ -2,7 +2,7 @@
 id: STORY-1.1
 type: story
 title: "Скелет на проекта"
-status: todo
+status: done
 parent: EPIC-1
 ---
 

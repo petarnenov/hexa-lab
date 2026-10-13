@@ -2,7 +2,7 @@
 id: SUB-1.1.1.1
 type: subtask
 title: "Скриптове cli/http/test/typecheck"
-status: todo
+status: done
 parent: TASK-1.1.1
 ---
 
