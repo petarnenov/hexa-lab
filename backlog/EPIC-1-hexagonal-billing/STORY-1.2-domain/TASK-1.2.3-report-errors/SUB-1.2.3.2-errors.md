@@ -2,7 +2,7 @@
 id: SUB-1.2.3.2
 type: subtask
 title: "errors.ts"
-status: todo
+status: done
 parent: TASK-1.2.3
 ---
 

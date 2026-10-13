@@ -2,7 +2,7 @@
 id: TASK-1.2.3
 type: task
 title: "FeeReport и грешки"
-status: todo
+status: done
 parent: STORY-1.2
 ---
 

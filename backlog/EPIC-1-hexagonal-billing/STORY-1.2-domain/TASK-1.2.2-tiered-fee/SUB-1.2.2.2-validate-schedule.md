@@ -2,7 +2,7 @@
 id: SUB-1.2.2.2
 type: subtask
 title: "Валидация на тарифа"
-status: todo
+status: done
 parent: TASK-1.2.2
 ---
 

@@ -2,7 +2,7 @@
 id: TASK-1.2.2
 type: task
 title: "tieredFee.ts"
-status: todo
+status: done
 parent: STORY-1.2
 ---
 

@@ -2,7 +2,7 @@
 id: TASK-1.2.1
 type: task
 title: "Типове Account, FeeSchedule, BillingPeriod"
-status: todo
+status: done
 parent: STORY-1.2
 ---
 

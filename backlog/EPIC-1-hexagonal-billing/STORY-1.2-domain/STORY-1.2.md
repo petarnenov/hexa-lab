@@ -2,7 +2,7 @@
 id: STORY-1.2
 type: story
 title: "Domain: tiered такси"
-status: todo
+status: done
 parent: EPIC-1
 ---
 

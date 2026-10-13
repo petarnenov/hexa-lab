@@ -2,7 +2,7 @@
 id: SUB-1.2.1.1
 type: subtask
 title: "Account.ts"
-status: todo
+status: done
 parent: TASK-1.2.1
 ---
 

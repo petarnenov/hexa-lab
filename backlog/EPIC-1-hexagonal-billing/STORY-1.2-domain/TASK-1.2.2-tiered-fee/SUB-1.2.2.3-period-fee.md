@@ -2,7 +2,7 @@
 id: SUB-1.2.2.3
 type: subtask
 title: "feeForPeriod и roundToCents"
-status: todo
+status: done
 parent: TASK-1.2.2
 ---
 
