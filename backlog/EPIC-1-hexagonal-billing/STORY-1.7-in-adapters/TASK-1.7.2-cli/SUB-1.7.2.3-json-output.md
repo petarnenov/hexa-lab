@@ -2,7 +2,7 @@
 id: SUB-1.7.2.3
 type: subtask
 title: "--json изход"
-status: todo
+status: done
 parent: TASK-1.7.2
 ---
 

@@ -2,7 +2,7 @@
 id: SUB-1.7.2.2
 type: subtask
 title: "Табличен изход"
-status: todo
+status: done
 parent: TASK-1.7.2
 ---
 

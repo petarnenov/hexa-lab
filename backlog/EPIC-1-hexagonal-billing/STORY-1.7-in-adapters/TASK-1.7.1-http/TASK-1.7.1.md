@@ -2,7 +2,7 @@
 id: TASK-1.7.1
 type: task
 title: "HTTP адаптер"
-status: todo
+status: done
 parent: STORY-1.7
 ---
 

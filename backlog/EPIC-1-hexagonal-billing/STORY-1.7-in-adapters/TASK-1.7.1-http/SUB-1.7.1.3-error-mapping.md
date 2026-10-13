@@ -2,7 +2,7 @@
 id: SUB-1.7.1.3
 type: subtask
 title: "Превод на грешки"
-status: todo
+status: done
 parent: TASK-1.7.1
 ---
 

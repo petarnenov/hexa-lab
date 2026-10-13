@@ -2,7 +2,7 @@
 id: SUB-1.7.1.1
 type: subtask
 title: "Рутиране"
-status: todo
+status: done
 parent: TASK-1.7.1
 ---
 

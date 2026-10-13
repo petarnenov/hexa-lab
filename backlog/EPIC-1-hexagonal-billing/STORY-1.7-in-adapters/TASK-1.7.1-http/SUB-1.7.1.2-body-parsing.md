@@ -2,7 +2,7 @@
 id: SUB-1.7.1.2
 type: subtask
 title: "Парсване на тялото"
-status: todo
+status: done
 parent: TASK-1.7.1
 ---
 

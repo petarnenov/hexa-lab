@@ -2,7 +2,7 @@
 id: TASK-1.7.2
 type: task
 title: "CLI адаптер"
-status: todo
+status: done
 parent: STORY-1.7
 ---
 

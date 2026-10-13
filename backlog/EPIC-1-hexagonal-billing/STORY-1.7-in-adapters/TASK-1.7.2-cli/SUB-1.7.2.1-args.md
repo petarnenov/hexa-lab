@@ -2,7 +2,7 @@
 id: SUB-1.7.2.1
 type: subtask
 title: "Аргументи"
-status: todo
+status: done
 parent: TASK-1.7.2
 ---
 

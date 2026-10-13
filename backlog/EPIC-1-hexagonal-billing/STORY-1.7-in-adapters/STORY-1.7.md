@@ -2,7 +2,7 @@
 id: STORY-1.7
 type: story
 title: "In адаптери: HTTP и CLI"
-status: todo
+status: done
 parent: EPIC-1
 ---
 
