@@ -1,0 +1,50 @@
+schema: spec-driven
+
+context: |
+  Project: hexa-lab — учебен мини billing проект, демонстриращ Hexagonal
+  Architecture (Ports & Adapters) върху tiered такси по AUM.
+
+  Tech stack: TypeScript (ESM), Node.js 24, tsx за стартиране, node:test за
+  тестове. Без framework-и. Dev зависимости само: typescript, tsx, @types/node.
+
+  Слоеве (src/):
+    - domain/        чиста логика, без I/O; импортира само domain/
+    - application/   use cases + портове (in/out); импортира domain/ и application/
+    - adapters/in/   driving адаптери: CLI, HTTP; не импортират adapters/out
+    - adapters/out/  driven адаптери: memory, json file repos, console publisher
+    - bootstrap/     composition root; единственият слой, който вижда всичко
+  Правилото за зависимостите се пази от test/architecture.test.ts.
+
+  Backlog: backlog/ (EPIC → STORY → TASK → SUB, статус във frontmatter).
+  Всяка OpenSpec change се мапва към една STORY от backlog-а; името на
+  change-а включва story ID, напр. `story-1-2-domain-tiered-fees`.
+  При archive на change-а се сменя status на съответната STORY на `done`.
+
+  Ключови числа (от блупринта): годишни такси 21 250 / 1 500 / 45 000;
+  5 239.73 за 90 дни; `hh-1` за Q1 2026 дава `total: 14239.73` през CLI и
+  HTTP, с memory и json storage.
+
+  Език: артефактите (proposal, design, specs, tasks) на български; кодът,
+  идентификаторите и commit съобщенията на английски.
+
+rules:
+  proposal:
+    - Посочи кои backlog ID-та (STORY/TASK/SUB) покрива change-ът
+    - Включи секция "Non-goals"
+  specs:
+    - Един spec на capability (напр. tiered-fee-calculation, calculate-household-fees, cli-adapter)
+    - Всеки requirement със scenario в Given/When/Then
+  tasks:
+    - Групирай по TASK от backlog-а; всяка задача ≤ 1 час
+    - Последната задача във всяка група: "npm run typecheck && npm test минават"
+
+operations:
+  apply:
+    guidance:
+      - Пиши тест преди имплементация (node:test)
+      - Не добавяй runtime зависимости
+      - След всяка група задачи пусни npm run typecheck && npm test
+  archive:
+    guidance:
+      - Смени status на покритите backlog елементи на done
+      - Обобщи накратко какво е влязло в specs/
