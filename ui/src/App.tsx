@@ -1,16 +1,27 @@
-// App - the shell: a header with the project name and an empty main.
+// App - the one screen: header, form, report.
 //
-// STORY-3.2 puts the form and the report inside <main>. The shell itself
-// knows nothing about fees, which is why it can be tested with nothing
-// behind it (App.test.tsx).
+// App owns the mutation and hands its pieces down: the form gets `mutate`
+// and `isPending`, the report gets `status`, `data` and `error`. Neither
+// child knows about React Query or fetch. React Query clears `data`/`error`
+// itself when `mutate` runs again, so a new submit hides the old error
+// without any reset here.
+import { FeeForm } from "./FeeForm";
+import { FeeReportView } from "./FeeReportView";
+import { useCalculateFees } from "./useCalculateFees";
+
 export function App() {
+  const fees = useCalculateFees();
+
   return (
     <div className="shell">
       <header className="header">
         <h1>hexa-lab</h1>
         <p>Household fees</p>
       </header>
-      <main />
+      <main>
+        <FeeForm onSubmit={fees.mutate} isPending={fees.isPending} />
+        <FeeReportView status={fees.status} report={fees.data} error={fees.error} />
+      </main>
     </div>
   );
 }
