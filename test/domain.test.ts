@@ -1,8 +1,18 @@
-// Domain tests (STORY-1.2, extended by STORY-1.5).
+// Domain tests (STORY-1.2, reviewed by STORY-1.5 / TASK-1.5.1).
 //
 // One `describe` per capability spec under openspec/specs/, one `test` per
 // scenario. Everything here is pure: no I/O, no clock, no adapters. That is
 // the whole point of the hexagon's core - it can be tested with plain values.
+//
+// Coverage map for the blueprint cases (TASK-1.5.1):
+//   SUB-1.5.1.1 tiers      150k / 2.5M / 6M / exactly 1M / AUM 0
+//                          -> "annual marginal fee" (five tests)
+//   SUB-1.5.1.2 minimum    150k over a full year -> 2 500
+//                          -> "fee for a period" / "the minimum annual fee wins"
+//               rounding   21 250 x 90 / 365 = 5 239.73; half-cent up/down; 1.005
+//                          -> "fee for a period" / "2.5M for Q1 2026", "roundToCents"
+//   SUB-1.5.1.3 period     90 / 1 / 366 days; from > to; 2026-02-30; non-ISO
+//                          -> "billing-period"
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 

@@ -1,4 +1,4 @@
-// Use case tests (STORY-1.4, extended by STORY-1.5).
+// Use case tests (STORY-1.4, reviewed by STORY-1.5 / TASK-1.5.2).
 //
 // The use case is the heart of the hexagon, and this file is the proof that
 // the heart beats without any infrastructure: every dependency is a tiny
@@ -6,6 +6,14 @@
 // their calls, so the tests can pin down *how* the ports are used (one
 // schedule lookup per id, publish exactly once, nothing published on error),
 // not just what comes out.
+//
+// Coverage map for the blueprint cases (TASK-1.5.2):
+//   SUB-1.5.2.1 happy path  hh-1, Q1 2026 -> 3 lines, total 14 239.73,
+//                           publish once with the very same report
+//                           -> "hh-1 for Q1 2026 ...", "the report is published exactly once ..."
+//   SUB-1.5.2.2 failures    unknown household / missing schedule / invalid
+//                           period, publisher never called
+//                           -> the four "... rejects with ..." tests
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -193,9 +201,10 @@ describe("calculate-household-fees", () => {
   });
 
   test("the use case source knows no adapters, environment or console", async () => {
-    // Cheap guard until architecture.test.ts (STORY-1.5): the use case may
-    // only see domain/ and its own ports. If this trips, the dependency
-    // belongs behind a port, not inside the use case.
+    // Complements test/architecture.test.ts, which checks *imports* between
+    // layers. This one checks *content*: even without an import, reading
+    // process.env or writing to console would be infrastructure leaking into
+    // the use case. If this trips, the dependency belongs behind a port.
     const source = await readFile(
       new URL("../src/application/CalculateHouseholdFeesService.ts", import.meta.url),
       "utf8",
