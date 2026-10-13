@@ -1,0 +1,6 @@
+[
+  { "id": "acc-1", "householdId": "hh-1", "name": "Alpha", "aum": 2500000, "feeScheduleId": "standard" },
+  { "id": "acc-2", "householdId": "hh-1", "name": "Beta", "aum": 150000, "feeScheduleId": "standard" },
+  { "id": "acc-3", "householdId": "hh-1", "name": "Gamma", "aum": 4000000, "feeScheduleId": "premium" },
+  { "id": "acc-4", "householdId": "hh-2", "name": "Delta", "aum": 800000, "feeScheduleId": "standard" }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "standard",
+    "name": "Standard",
+    "tiers": [
+      { "upTo": 1000000, "annualRateBps": 100 },
+      { "upTo": 5000000, "annualRateBps": 75 },
+      { "upTo": null, "annualRateBps": 50 }
+    ],
+    "minimumAnnualFee": 2500
+  },
+  {
+    "id": "premium",
+    "name": "Premium",
+    "tiers": [
+      { "upTo": null, "annualRateBps": 85 }
+    ],
+    "minimumAnnualFee": 5000
+  }
+]
