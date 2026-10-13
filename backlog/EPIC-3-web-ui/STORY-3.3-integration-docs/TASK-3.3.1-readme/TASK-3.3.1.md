@@ -2,7 +2,7 @@
 id: TASK-3.3.1
 type: task
 title: "README"
-status: todo
+status: done
 parent: STORY-3.3
 ---
 

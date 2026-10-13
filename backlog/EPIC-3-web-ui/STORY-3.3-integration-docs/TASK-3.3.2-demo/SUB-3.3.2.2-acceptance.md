@@ -2,7 +2,7 @@
 id: SUB-3.3.2.2
 type: subtask
 title: "Ръчна приемка"
-status: todo
+status: done
 parent: TASK-3.3.2
 ---
 

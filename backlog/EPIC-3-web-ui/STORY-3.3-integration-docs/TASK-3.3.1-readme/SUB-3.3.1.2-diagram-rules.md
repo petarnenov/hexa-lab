@@ -2,7 +2,7 @@
 id: SUB-3.3.1.2
 type: subtask
 title: "Диаграма и правила"
-status: todo
+status: done
 parent: TASK-3.3.1
 ---
 

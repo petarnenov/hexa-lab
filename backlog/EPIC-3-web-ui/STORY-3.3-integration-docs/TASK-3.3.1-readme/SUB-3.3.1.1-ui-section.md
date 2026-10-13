@@ -2,7 +2,7 @@
 id: SUB-3.3.1.1
 type: subtask
 title: "Секция UI"
-status: todo
+status: done
 parent: TASK-3.3.1
 ---
 

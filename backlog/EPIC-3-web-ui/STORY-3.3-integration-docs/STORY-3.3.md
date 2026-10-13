@@ -2,7 +2,7 @@
 id: STORY-3.3
 type: story
 title: "Интеграция и документация"
-status: todo
+status: done
 parent: EPIC-3
 ---
 

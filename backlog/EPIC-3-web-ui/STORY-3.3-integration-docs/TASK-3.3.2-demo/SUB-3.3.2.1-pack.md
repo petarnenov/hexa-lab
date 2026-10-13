@@ -2,7 +2,7 @@
 id: SUB-3.3.2.1
 type: subtask
 title: "pack включва ui/"
-status: todo
+status: done
 parent: TASK-3.3.2
 ---
 

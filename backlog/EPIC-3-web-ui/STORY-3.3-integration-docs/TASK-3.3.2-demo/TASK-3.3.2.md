@@ -2,7 +2,7 @@
 id: TASK-3.3.2
 type: task
 title: "Демо и pack"
-status: todo
+status: done
 parent: STORY-3.3
 ---
 

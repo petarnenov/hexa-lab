@@ -2,7 +2,7 @@
 id: EPIC-3
 type: epic
 title: "Web UI: малък, но хубав"
-status: todo
+status: done
 ---
 
 # EPIC-3 Web UI: малък, но хубав
