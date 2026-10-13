@@ -36,6 +36,10 @@ describe("project-readme", () => {
     mentions("npm install", "npm test", "npm run typecheck", "npm run cli", "npm run http");
   });
 
+  test("gives the commands to install, run and test the UI", () => {
+    mentions("cd ui && npm install", "npm run ui", "npm run ui:test", "localhost:5173");
+  });
+
   test("explains the environment variables", () => {
     mentions("STORAGE=json", "DATA_DIR", "PORT");
   });

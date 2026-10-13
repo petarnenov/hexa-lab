@@ -33,7 +33,10 @@ const outFile = resolve(process.argv[2] ?? join(ROOT, "hexa.tar.gz"));
 // What stays out. Mirrors .gitignore - when one changes, change the other.
 // The output file itself is excluded by path so that `npm run pack` twice
 // does not nest the first archive inside the second.
+// Directories excluded wherever they appear (so ui/node_modules too):
 const EXCLUDED_DIRS = new Set([".git", "node_modules"]);
+// Directories excluded by repo-relative path, the way .gitignore lists them:
+const EXCLUDED_PATHS = new Set(["ui/dist"]);
 const EXCLUDED_FILES = new Set([".DS_Store"]);
 const EXCLUDED_SUFFIXES = [".bak", ".tsbuildinfo", ".log", ".tar.gz"];
 // `session-report-*.html` in .gitignore: usage reports a Claude Code plugin drops in the repo root.
@@ -53,10 +56,11 @@ function walk(dir: string): string[] {
   const files: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => (a.name < b.name ? -1 : 1))) {
     const absolute = join(dir, entry.name);
+    const repoPath = relative(ROOT, absolute).split("\\").join("/");
     if (entry.isDirectory()) {
-      if (!EXCLUDED_DIRS.has(entry.name)) files.push(...walk(absolute));
+      if (!EXCLUDED_DIRS.has(entry.name) && !EXCLUDED_PATHS.has(repoPath)) files.push(...walk(absolute));
     } else if (entry.isFile() && !isExcludedFile(entry.name, absolute)) {
-      files.push(relative(ROOT, absolute).split("\\").join("/"));
+      files.push(repoPath);
     }
   }
   return files;

@@ -2,7 +2,8 @@
 
 A teaching-sized billing project: tiered fees on assets under management
 (AUM), built as a hexagon (Ports & Adapters) in TypeScript on Node, with no
-framework and no runtime dependencies. The point is not the fees; it is that
+framework and no runtime dependencies in the hexagon itself (the browser
+client in `ui/` is a separate package). The point is not the fees; it is that
 you can swap the storage, or the way you call it, without touching the
 business logic - and that a test fails if you try to cheat.
 
@@ -12,6 +13,9 @@ Every box below is a real path in `src/`. Arrows point in the direction of
 imports: the outside depends on the inside, never the other way round.
 
 ```
+               terminal                  curl · browser (ui/)
+                   │                          │        clients, outside
+                   ▼                          ▼        the hexagon
                       driving (in) adapters
          ┌────────────────────┐   ┌────────────────────┐
          │ src/adapters/in/   │   │ src/adapters/in/   │
@@ -61,6 +65,11 @@ This table is also data in `test/architecture.test.ts`: the test parses every
 import in `src/`, maps source and target to a layer, and fails `npm test` with
 the file, the import and the broken rule if any edge is not in the table.
 Exercise 5 below is to watch it fire.
+
+`ui/` is not a row in that table. It is a separate npm package outside
+`src/` - a browser client that talks to the HTTP adapter over HTTP only,
+imports nothing from `src/`, and is not walked by the architecture test.
+Like `curl`, it sits outside the hexagon and knocks on a door.
 
 ## Running it
 
@@ -154,6 +163,54 @@ translation from domain error to status code happens in exactly one place,
 `src/adapters/in/createHttpServer.ts` - the use case throws the same error
 whoever is calling.
 
+### UI
+
+A small React page (`ui/`) over the same HTTP adapter: one form, one
+table. It is its own npm package with its own `package.json` and lockfile,
+so install it once, separately from the root:
+
+```sh
+cd ui && npm install
+```
+
+Then two terminals, both from the repo root:
+
+```sh
+npm run http   # terminal 1: the HTTP adapter on :3000
+npm run ui     # terminal 2: Vite dev server on http://localhost:5173
+```
+
+Open `http://localhost:5173`. The form comes filled in with `hh-1` and
+Q1 2026; **Calculate** shows the three lines and `14,239.73` - the same
+report as the `curl` above, formatted. `hh-404` shows the error code and
+message in a panel instead of a table.
+
+The page calls `/households/...` on its own origin and the Vite dev server
+proxies that path to `http://localhost:3000`. That proxy is the whole
+integration: `src/adapters/in/createHttpServer.ts` has no CORS header and
+does not know the UI exists. `PORT` is read by both sides, once at startup,
+so to use another backend port pass it to both: `PORT=3001 npm run http`
+and `PORT=3001 npm run ui`. To move Vite itself off 5173:
+
+```sh
+npm run ui -- -- --port 5174        # two "--": one for the root npm, one for the nested one
+cd ui && npm run dev -- --port 5174 # the same, from inside ui/
+```
+
+(`npm run ui -- --port 5174` does *not* work: the nested `npm` swallows
+`--port` as its own option. Vite prints the address it actually bound.)
+
+Tests and types for the UI, from the root or from `ui/`:
+
+```sh
+npm run ui:test                     # = cd ui && npm test (Vitest, jsdom)
+cd ui && npm run typecheck
+```
+
+`ui/` imports nothing from `src/`; it knows only the JSON contract of the
+HTTP adapter (a copy of the report type lives in `ui/src/api/types.ts`).
+The root `npm test` and `test/architecture.test.ts` never look at it.
+
 ### Switching storage
 
 Three environment variables, all read in `src/bootstrap/`:
@@ -177,7 +234,7 @@ anything listens, with the allowed values in the message. Edit
 `data/accounts.json` and run again with `STORAGE=json` to see the json
 adapter is really reading the file.
 
-### Demo: same total, four ways
+### Demo: same total, five ways
 
 The total for household `hh-1` in Q1 2026 is `14239.73`, whichever door you
 come in through and whichever storage is behind the ports.
@@ -189,12 +246,16 @@ npm run http &                                                    # memory on :3
 STORAGE=json PORT=3001 npm run http &                             # json on :3001
 curl -s -X POST localhost:3000/households/hh-1/fees -d '{"from":"2026-01-01","to":"2026-03-31"}'
 curl -s -X POST localhost:3001/households/hh-1/fees -d '{"from":"2026-01-01","to":"2026-03-31"}'
+npm run ui                                                        # 5. the browser, on :3000
 ```
 
 The two `curl` bodies and the `--json` line are identical; the table shows
 the same three fees and the same `TOTAL`. The only visible difference is the
 first line each process logs: `[bootstrap] STORAGE=memory` or
-`[bootstrap] STORAGE=json`.
+`[bootstrap] STORAGE=json`. The fifth way is the browser: open
+`http://localhost:5173`, press **Calculate**, and the table shows the same
+three fees and `14,239.73` (the UI adds the thousands separator; the number
+is the one the `:3000` server just sent - and logged on stderr).
 
 ## Exercises
 
@@ -243,9 +304,11 @@ broken down there. They are not implemented here - that is the point.
   done. The specs are the behaviour contract the tests follow.
 - `CLAUDE.md` is the working agreement between the two.
 
-To hand the project over as a single file without `node_modules`:
+To hand the project over as a single file without `node_modules` (the
+archive includes `ui/`, minus its `node_modules/` and `dist/`):
 
 ```sh
 npm run pack          # writes hexa.tar.gz, everything under a hexa/ prefix
-tar -xzf hexa.tar.gz  # on the other side: cd hexa && npm install && npm test
+tar -xzf hexa.tar.gz  # on the other side:
+cd hexa && npm install && npm test && (cd ui && npm install && npm test)
 ```

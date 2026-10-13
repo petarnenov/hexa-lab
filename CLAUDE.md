@@ -2,7 +2,8 @@
 
 Учебен мини billing проект: Hexagonal Architecture (Ports & Adapters) върху
 tiered такси по AUM. TypeScript ESM, Node 24, `tsx`, `node:test`. Без
-framework-и и без runtime зависимости.
+framework-и и без runtime зависимости в хексагона; `ui/` е отделен пакет
+(React + Vite) - браузърен клиент на HTTP адаптера.
 
 ## Как се работи
 
@@ -22,7 +23,8 @@ backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive  →
    Proposal-ът изброява покритите backlog ID-та. Tasks са групирани по TASK.
    Само планиране — не пипа код. Прегледай артефактите преди следващата стъпка.
 3. **`/opsx:apply`** — имплементира `tasks.md` задача по задача. Тест преди код.
-   След всяка група: `npm run typecheck && npm test`.
+   След всяка група: `npm run typecheck && npm test` (и
+   `cd ui && npm run typecheck && npm test`, ако change-ът пипа `ui/`).
 4. **Sync docs** (задължително след apply, преди archive) — документацията
    трябва да описва това, което реално е написано, не плана. Прегледай
    `design.md`, `proposal.md` и delta spec-овете на change-а срещу кода и
@@ -50,9 +52,13 @@ backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive  →
 - Слоеве в `src/`: `domain/` → `application/` → `adapters/in|out/` → `bootstrap/`.
   Правилото за зависимостите е в `openspec/config.yaml` и се пази от
   `test/architecture.test.ts`.
+- `ui/` е отделен npm пакет (React + Vite + Vitest) със собствен
+  `package.json`; говори със сървъра само по HTTP през Vite proxy и не
+  импортира `src/`. Тестът за архитектурата не го обхожда.
 - Статусът на backlog елемент живее само във frontmatter (`todo` →
   `in-progress` → `done`). При старт на apply сложи `in-progress` на story-то.
 - Артефактите на OpenSpec са на български; код, идентификатори и commit
   съобщения на английски.
 - Commit съобщения: imperative изречение, без prefix, без trailers.
-- Не добавяй runtime зависимости. Dev: само `typescript`, `tsx`, `@types/node`.
+- Не добавяй runtime зависимости в корена (`src/`). Dev: само `typescript`,
+  `tsx`, `@types/node`. `ui/` има свои зависимости.

@@ -6,6 +6,9 @@ context: |
 
   Tech stack: TypeScript (ESM), Node.js 24, tsx за стартиране, node:test за
   тестове. Без framework-и. Dev зависимости само: typescript, tsx, @types/node.
+  ui/ е отделен пакет (React + Vite + Vitest) със свои зависимости; правилото
+  за src/ не важи за него; ui/ не импортира src/ и говори със сървъра само по
+  HTTP (Vite proxy /households → localhost:PORT).
 
   Слоеве (src/):
     - domain/        чиста логика, без I/O; импортира само domain/
@@ -42,7 +45,7 @@ operations:
   apply:
     guidance:
       - Пиши тест преди имплементация (node:test)
-      - Не добавяй runtime зависимости
+      - Не добавяй runtime зависимости в корена; в ui/ - само с причина в design.md
       - След всяка група задачи пусни npm run typecheck && npm test
       - "След последната задача синхронизирай документацията: design.md,
         proposal.md и delta spec-овете описват реалния код, не плана;

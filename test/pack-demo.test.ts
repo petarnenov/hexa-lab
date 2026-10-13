@@ -10,10 +10,11 @@
 // wrong is caught rather than mirrored.
 //
 // `describe` matches the pack requirement in openspec/specs/project-toolchain.
-import { after, describe, test } from "node:test";
+import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,6 +23,13 @@ import { gunzipSync } from "node:zlib";
 const SCRIPT = fileURLToPath(new URL("../scripts/pack-demo.ts", import.meta.url));
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const BLOCK = 512;
+
+// ui/dist/ is what `vite build` writes and .gitignore hides. To check that
+// pack really skips it, the suite plants a marker file there before packing
+// and removes it afterwards - the directory too, but only if the suite
+// created it, so a real build is never deleted.
+const UI_DIST = join(ROOT, "ui", "dist");
+const MARKER = join(UI_DIST, ".pack-test");
 
 /** Runs the pack script to `out`; resolves with its stderr. */
 function pack(out: string): Promise<string> {
@@ -63,8 +71,17 @@ describe("pack-demo", () => {
   let names: string[];
   let stderr: string;
 
+  let createdUiDist = false;
+
+  before(async () => {
+    createdUiDist = !existsSync(UI_DIST);
+    await mkdir(UI_DIST, { recursive: true });
+    await writeFile(MARKER, "planted by test/pack-demo.test.ts\n");
+  });
+
   after(async () => {
     if (dir) await rm(dir, { recursive: true, force: true });
+    await rm(createdUiDist ? UI_DIST : MARKER, { recursive: true, force: true });
   });
 
   test("the script writes a readable archive and says so on stderr", async () => {
@@ -92,6 +109,11 @@ describe("pack-demo", () => {
     assert.deepEqual(ignored, []);
   });
 
+  test("ui/node_modules and ui/dist are not in the archive", () => {
+    const generated = names.filter((n) => n.startsWith("hexa/ui/node_modules/") || n.startsWith("hexa/ui/dist/"));
+    assert.deepEqual(generated, []);
+  });
+
   test("the project files are in the archive", () => {
     for (const expected of [
       "hexa/README.md",
@@ -99,6 +121,10 @@ describe("pack-demo", () => {
       "hexa/src/bootstrap/compose.ts",
       "hexa/data/accounts.json",
       "hexa/test/architecture.test.ts",
+      "hexa/ui/package.json",
+      "hexa/ui/package-lock.json",
+      "hexa/ui/vite.config.ts",
+      "hexa/ui/src/App.tsx",
     ]) {
       assert.ok(names.includes(expected), `missing ${expected}`);
     }
