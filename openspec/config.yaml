@@ -36,7 +36,7 @@ rules:
     - Всеки requirement със scenario в Given/When/Then
   tasks:
     - Групирай по TASK от backlog-а; всяка задача ≤ 1 час
-    - Последната задача във всяка група: "npm run typecheck && npm test минават"
+    - "Последната задача във всяка група: npm run typecheck && npm test минават"
 
 operations:
   apply:
