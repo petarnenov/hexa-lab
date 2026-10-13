@@ -14,3 +14,6 @@ hexa.tar.gz
 
 # Playwright MCP session output
 .playwright-mcp/
+
+# Vite build output of the ui/ package (ui/node_modules/ is covered by node_modules/ above)
+ui/dist/

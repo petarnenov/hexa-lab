@@ -1,0 +1,81 @@
+/* The whole theme: one dark palette as custom properties on :root.
+   Components never hard-code a colour - if a value is not in this block, it
+   is not a colour the UI uses. Dark only, so there is no [data-theme] switch.
+
+   Contrast (WCAG, computed at apply time):
+     --text  #e6e8ee on --bg #0f1115      15.4:1
+     --text  #e6e8ee on --surface #171a21 14.2:1
+     --muted #9aa3b2 on --bg #0f1115       7.4:1
+     --muted #9aa3b2 on --surface #171a21  6.8:1
+     --accent #7dd3c0 on --bg #0f1115     10.8:1
+     --danger #f87171 on --bg #0f1115      6.8:1 */
+:root {
+  color-scheme: dark;
+
+  --bg: #0f1115;
+  --surface: #171a21;
+  --border: #2a2f3a;
+  --text: #e6e8ee;
+  --muted: #9aa3b2;
+  --accent: #7dd3c0;
+  --danger: #f87171;
+
+  --radius: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header and main share one column: centred, capped, 16px gutter on phones. */
+.shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-3) var(--space-5);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-4);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-family: var(--font-mono);
+}
+
+.header p {
+  margin: 0;
+  color: var(--muted);
+}
