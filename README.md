@@ -9,13 +9,19 @@ business logic - and that a test fails if you try to cheat.
 
 ## The hexagon
 
-Every box below is a real path in `src/`. Arrows point in the direction of
+Every box below is a real path in the repo (all in `src/`, except `ui/`, which
+is the browser client outside the hexagon). Arrows point in the direction of
 imports: the outside depends on the inside, never the other way round.
 
 ```
-               terminal                  curl · browser (ui/)
-                   │                          │        clients, outside
-                   ▼                          ▼        the hexagon
+                                   ┌──────────────────────┐
+                                   │ ui/  (React + Vite)  │  separate npm
+                                   │ src/api/calculateFees│  package, imports
+                                   └──────────┬───────────┘  nothing from src/
+                                              │ HTTP (Vite proxy
+               terminal                 curl  │  /households → :3000)
+                   │                      │   │        clients, outside
+                   ▼                      ▼   ▼        the hexagon
                       driving (in) adapters
          ┌────────────────────┐   ┌────────────────────┐
          │ src/adapters/in/   │   │ src/adapters/in/   │
