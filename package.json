@@ -1,0 +1,21 @@
+{
+  "name": "hexa-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Teaching mini billing project: Hexagonal Architecture over tiered AUM fees",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "cli": "tsx src/bootstrap/cli.main.ts",
+    "http": "tsx src/bootstrap/http.main.ts",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
