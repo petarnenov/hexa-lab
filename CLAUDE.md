@@ -12,6 +12,7 @@ framework-и и без runtime зависимости.
 ```
 backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive  →  /clear
    (какво)            (план)            (код)           (спецове + done)   (нов контекст)
+                                          └─ sync docs ─┘
 ```
 
 1. **Избери story** от `backlog/README.md` (дървото) — първата със `status: todo`
@@ -22,12 +23,19 @@ backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive  →
    Само планиране — не пипа код. Прегледай артефактите преди следващата стъпка.
 3. **`/opsx:apply`** — имплементира `tasks.md` задача по задача. Тест преди код.
    След всяка група: `npm run typecheck && npm test`.
-4. **`/opsx:verify`** (по желание) — проверява код срещу spec/design/tasks.
-5. **`/opsx:archive`** — мърджва delta spec-овете в `openspec/specs/`, мести
+4. **Sync docs** (задължително след apply, преди archive) — документацията
+   трябва да описва това, което реално е написано, не плана. Прегледай
+   `design.md`, `proposal.md` и delta spec-овете на change-а срещу кода и
+   поправи всяко отклонение (сменено решение, друг файл, друга сигнатура,
+   намерен при apply проблем). Отклонението се записва в design.md с едно
+   изречение *защо*. Когато има `README.md` (STORY-1.9+), обнови и него:
+   структура, команди, примери. Накрая `npm run typecheck && npm test`.
+5. **`/opsx:verify`** (по желание) — проверява код срещу spec/design/tasks.
+6. **`/opsx:archive`** — мърджва delta spec-овете в `openspec/specs/`, мести
    change-а в `openspec/changes/archive/`, сменя `status: done` на покритите
    backlog елементи.
-6. **`/commit`** — комит след archive (или след apply, ако story-то е голямо).
-7. **`/clear`** — след archive (и commit) потребителят чисти контекста, за да
+7. **`/commit`** — комит след archive (или след apply, ако story-то е голямо).
+8. **`/clear`** — след archive (и commit) потребителят чисти контекста, за да
    започне следващото story на чисто. Claude не може да го направи сам, затова
    archive-ът завършва с напомняне за `/clear`.
 
