@@ -2,7 +2,7 @@
 id: SUB-1.5.1.3
 type: subtask
 title: "Период"
-status: todo
+status: done
 parent: TASK-1.5.1
 ---
 

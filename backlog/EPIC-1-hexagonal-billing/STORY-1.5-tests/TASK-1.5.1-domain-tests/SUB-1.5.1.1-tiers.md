@@ -2,7 +2,7 @@
 id: SUB-1.5.1.1
 type: subtask
 title: "Кейсове за нивата"
-status: todo
+status: done
 parent: TASK-1.5.1
 ---
 

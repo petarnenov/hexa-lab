@@ -2,7 +2,7 @@
 id: TASK-1.5.2
 type: task
 title: "test/calculate-fees.test.ts"
-status: todo
+status: done
 parent: STORY-1.5
 ---
 

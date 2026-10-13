@@ -2,7 +2,7 @@
 id: STORY-1.5
 type: story
 title: "Тестове"
-status: todo
+status: done
 parent: EPIC-1
 ---
 

@@ -2,7 +2,7 @@
 id: SUB-1.5.3.2
 type: subtask
 title: "Таблица с правила по слоеве"
-status: todo
+status: done
 parent: TASK-1.5.3
 ---
 

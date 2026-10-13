@@ -2,7 +2,7 @@
 id: SUB-1.5.1.2
 type: subtask
 title: "Минимум и закръгляне"
-status: todo
+status: done
 parent: TASK-1.5.1
 ---
 

@@ -2,7 +2,7 @@
 id: SUB-1.5.3.1
 type: subtask
 title: "Парсер на import-и"
-status: todo
+status: done
 parent: TASK-1.5.3
 ---
 

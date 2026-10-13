@@ -2,7 +2,7 @@
 id: TASK-1.5.1
 type: task
 title: "test/domain.test.ts"
-status: todo
+status: done
 parent: STORY-1.5
 ---
 

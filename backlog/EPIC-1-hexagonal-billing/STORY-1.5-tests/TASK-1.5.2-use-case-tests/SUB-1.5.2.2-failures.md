@@ -2,7 +2,7 @@
 id: SUB-1.5.2.2
 type: subtask
 title: "Грешки"
-status: todo
+status: done
 parent: TASK-1.5.2
 ---
 

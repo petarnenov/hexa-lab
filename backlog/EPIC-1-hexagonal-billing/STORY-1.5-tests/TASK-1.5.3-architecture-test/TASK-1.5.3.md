@@ -2,7 +2,7 @@
 id: TASK-1.5.3
 type: task
 title: "test/architecture.test.ts"
-status: todo
+status: done
 parent: STORY-1.5
 ---
 

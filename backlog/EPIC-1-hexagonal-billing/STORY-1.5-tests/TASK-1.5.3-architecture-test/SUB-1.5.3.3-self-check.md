@@ -2,7 +2,7 @@
 id: SUB-1.5.3.3
 type: subtask
 title: "Само-проверка на парсера"
-status: todo
+status: done
 parent: TASK-1.5.3
 ---
 
