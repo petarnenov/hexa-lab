@@ -2,7 +2,7 @@
 id: SUB-3.2.2.2
 type: subtask
 title: "Submit през useMutation"
-status: todo
+status: done
 parent: TASK-3.2.2
 ---
 

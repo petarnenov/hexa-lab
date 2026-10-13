@@ -2,7 +2,7 @@
 id: SUB-3.2.2.1
 type: subtask
 title: "Полета и defaults"
-status: todo
+status: done
 parent: TASK-3.2.2
 ---
 

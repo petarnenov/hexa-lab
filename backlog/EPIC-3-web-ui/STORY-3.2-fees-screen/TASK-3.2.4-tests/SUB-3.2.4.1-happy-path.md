@@ -2,7 +2,7 @@
 id: SUB-3.2.4.1
 type: subtask
 title: "Успешен път"
-status: todo
+status: done
 parent: TASK-3.2.4
 ---
 

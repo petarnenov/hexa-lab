@@ -2,7 +2,7 @@
 id: TASK-3.2.3
 type: task
 title: "Отчет"
-status: todo
+status: done
 parent: STORY-3.2
 ---
 

@@ -2,7 +2,7 @@
 id: TASK-3.2.2
 type: task
 title: "Форма"
-status: todo
+status: done
 parent: STORY-3.2
 ---
 

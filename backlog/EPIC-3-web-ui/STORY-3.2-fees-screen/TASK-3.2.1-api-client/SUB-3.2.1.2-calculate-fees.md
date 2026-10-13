@@ -2,7 +2,7 @@
 id: SUB-3.2.1.2
 type: subtask
 title: "calculateFees"
-status: todo
+status: done
 parent: TASK-3.2.1
 ---
 

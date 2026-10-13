@@ -2,7 +2,7 @@
 id: SUB-3.2.1.1
 type: subtask
 title: "Типове FeeReport"
-status: todo
+status: done
 parent: TASK-3.2.1
 ---
 

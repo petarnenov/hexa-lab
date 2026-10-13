@@ -2,7 +2,7 @@
 id: SUB-3.2.3.1
 type: subtask
 title: "Таблица с редове"
-status: todo
+status: done
 parent: TASK-3.2.3
 ---
 

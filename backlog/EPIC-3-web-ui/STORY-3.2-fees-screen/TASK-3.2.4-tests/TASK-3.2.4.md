@@ -2,7 +2,7 @@
 id: TASK-3.2.4
 type: task
 title: "Тестове"
-status: todo
+status: done
 parent: STORY-3.2
 ---
 

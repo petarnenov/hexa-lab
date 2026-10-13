@@ -2,7 +2,7 @@
 id: TASK-3.2.1
 type: task
 title: "API клиент"
-status: todo
+status: done
 parent: STORY-3.2
 ---
 

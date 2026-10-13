@@ -2,7 +2,7 @@
 id: SUB-3.2.3.2
 type: subtask
 title: "Total и период"
-status: todo
+status: done
 parent: TASK-3.2.3
 ---
 

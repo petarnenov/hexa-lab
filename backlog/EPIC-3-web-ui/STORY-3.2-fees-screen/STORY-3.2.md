@@ -2,7 +2,7 @@
 id: STORY-3.2
 type: story
 title: "Екран „Такси на household“"
-status: todo
+status: done
 parent: EPIC-3
 ---
 

@@ -2,7 +2,7 @@
 id: SUB-3.2.1.3
 type: subtask
 title: "ApiError"
-status: todo
+status: done
 parent: TASK-3.2.1
 ---
 

@@ -2,7 +2,7 @@
 id: SUB-3.2.3.3
 type: subtask
 title: "Състояния idle/loading/error"
-status: todo
+status: done
 parent: TASK-3.2.3
 ---
 

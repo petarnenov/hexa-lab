@@ -2,7 +2,7 @@
 id: SUB-3.2.4.2
 type: subtask
 title: "Грешки от сървъра"
-status: todo
+status: done
 parent: TASK-3.2.4
 ---
 
