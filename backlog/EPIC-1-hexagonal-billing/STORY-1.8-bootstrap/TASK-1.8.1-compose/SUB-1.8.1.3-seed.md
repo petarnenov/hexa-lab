@@ -2,7 +2,7 @@
 id: SUB-1.8.1.3
 type: subtask
 title: "seed.ts"
-status: todo
+status: done
 parent: TASK-1.8.1
 ---
 

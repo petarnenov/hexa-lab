@@ -2,7 +2,7 @@
 id: SUB-1.8.2.1
 type: subtask
 title: "cli.main.ts"
-status: todo
+status: done
 parent: TASK-1.8.2
 ---
 

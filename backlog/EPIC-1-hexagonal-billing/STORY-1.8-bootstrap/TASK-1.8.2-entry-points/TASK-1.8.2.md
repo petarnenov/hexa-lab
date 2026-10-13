@@ -2,7 +2,7 @@
 id: TASK-1.8.2
 type: task
 title: "Entry points"
-status: todo
+status: done
 parent: STORY-1.8
 ---
 

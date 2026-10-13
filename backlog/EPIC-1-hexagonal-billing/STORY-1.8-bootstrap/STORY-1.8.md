@@ -2,7 +2,7 @@
 id: STORY-1.8
 type: story
 title: "Bootstrap: composition root"
-status: todo
+status: done
 parent: EPIC-1
 ---
 

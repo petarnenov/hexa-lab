@@ -2,7 +2,7 @@
 id: TASK-1.8.1
 type: task
 title: "compose.ts"
-status: todo
+status: done
 parent: STORY-1.8
 ---
 

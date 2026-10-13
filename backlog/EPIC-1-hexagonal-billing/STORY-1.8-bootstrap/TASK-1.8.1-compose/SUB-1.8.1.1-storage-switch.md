@@ -2,7 +2,7 @@
 id: SUB-1.8.1.1
 type: subtask
 title: "Избор по STORAGE"
-status: todo
+status: done
 parent: TASK-1.8.1
 ---
 

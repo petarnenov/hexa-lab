@@ -2,7 +2,7 @@
 id: SUB-1.8.1.2
 type: subtask
 title: "Път до data/"
-status: todo
+status: done
 parent: TASK-1.8.1
 ---
 
