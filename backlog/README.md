@@ -134,4 +134,38 @@ EPIC-2  Упражнения (за самостоятелна работа)
     TASK-2.5.1  Експеримент
       SUB-2.5.1.1  Добави забранен import
       SUB-2.5.1.2  Пусни npm test и върни
+EPIC-3  Web UI: малък, но хубав
+  STORY-3.1  Скелет на UI
+    TASK-3.1.1  Vite проект
+      SUB-3.1.1.1  package.json и скриптове
+      SUB-3.1.1.2  vite.config.ts с proxy
+      SUB-3.1.1.3  tsconfig.json и .gitignore
+    TASK-3.1.2  Тъмна тема и App shell
+      SUB-3.1.2.1  Design tokens
+      SUB-3.1.2.2  App shell
+    TASK-3.1.3  Vitest
+      SUB-3.1.3.1  Setup файл
+      SUB-3.1.3.2  Smoke тест на App
+  STORY-3.2  Екран „Такси на household“
+    TASK-3.2.1  API клиент
+      SUB-3.2.1.1  Типове FeeReport
+      SUB-3.2.1.2  calculateFees
+      SUB-3.2.1.3  ApiError
+    TASK-3.2.2  Форма
+      SUB-3.2.2.1  Полета и defaults
+      SUB-3.2.2.2  Submit през useMutation
+    TASK-3.2.3  Отчет
+      SUB-3.2.3.1  Таблица с редове
+      SUB-3.2.3.2  Total и период
+      SUB-3.2.3.3  Състояния idle/loading/error
+    TASK-3.2.4  Тестове
+      SUB-3.2.4.1  Успешен път
+      SUB-3.2.4.2  Грешки от сървъра
+  STORY-3.3  Интеграция и документация
+    TASK-3.3.1  README
+      SUB-3.3.1.1  Секция UI
+      SUB-3.3.1.2  Диаграма и правила
+    TASK-3.3.2  Демо и pack
+      SUB-3.3.2.1  pack включва ui/
+      SUB-3.3.2.2  Ръчна приемка
 ```
