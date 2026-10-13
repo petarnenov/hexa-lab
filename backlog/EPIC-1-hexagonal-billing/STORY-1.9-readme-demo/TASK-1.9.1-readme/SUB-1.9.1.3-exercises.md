@@ -2,7 +2,7 @@
 id: SUB-1.9.1.3
 type: subtask
 title: "Секция Упражнения"
-status: todo
+status: done
 parent: TASK-1.9.1
 ---
 

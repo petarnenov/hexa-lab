@@ -2,7 +2,7 @@
 id: STORY-1.9
 type: story
 title: "README и демо"
-status: todo
+status: done
 parent: EPIC-1
 ---
 

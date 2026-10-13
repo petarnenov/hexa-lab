@@ -2,7 +2,7 @@
 id: SUB-1.9.2.1
 type: subtask
 title: "CLI с memory и json"
-status: todo
+status: done
 parent: TASK-1.9.2
 ---
 

@@ -2,7 +2,7 @@
 id: EPIC-1
 type: epic
 title: "Хексагонален мини billing"
-status: todo
+status: done
 ---
 
 # EPIC-1 Хексагонален мини billing

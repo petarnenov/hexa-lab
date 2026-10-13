@@ -2,7 +2,7 @@
 id: TASK-1.9.2
 type: task
 title: "Финално демо"
-status: todo
+status: done
 parent: STORY-1.9
 ---
 

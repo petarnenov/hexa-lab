@@ -2,7 +2,7 @@
 id: SUB-1.9.1.2
 type: subtask
 title: "Стартиране и смяна на storage"
-status: todo
+status: done
 parent: TASK-1.9.1
 ---
 

@@ -2,7 +2,7 @@
 id: TASK-1.9.1
 type: task
 title: "README.md"
-status: todo
+status: done
 parent: STORY-1.9
 ---
 
