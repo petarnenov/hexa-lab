@@ -47,6 +47,9 @@ backlog/STORY-x.y  →  /opsx:propose  →  /opsx:apply  →  /opsx:archive  →
 `/opsx:update` (редакция на change), `/opsx:sync` (spec-ове без archive),
 `/opsx:bulk-archive`, `/opsx:onboard`.
 
+Ако `node` от PATH не стартира, пускай командите с
+`PATH=~/.nvm/versions/node/v24.21.0/bin:$PATH` (там е и `openspec` CLI).
+
 ## Правила
 
 - Слоеве в `src/`: `domain/` → `application/` → `adapters/in|out/` → `bootstrap/`.
