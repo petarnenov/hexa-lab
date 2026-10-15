@@ -1,0 +1,6 @@
+# Accounts for STORAGE=txt - one per line, the same data as accounts.json.
+# id  | householdId | name  | aum     | feeScheduleId
+acc-1 | hh-1        | Alpha | 2500000 | standard
+acc-2 | hh-1        | Beta  | 150000  | standard
+acc-3 | hh-1        | Gamma | 4000000 | premium
+acc-4 | hh-2        | Delta | 800000  | standard

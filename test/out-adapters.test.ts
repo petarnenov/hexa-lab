@@ -1,7 +1,7 @@
 // Driven (outbound) adapter tests (STORY-1.6).
 //
-// Two technologies - memory and JSON files on disk - behind the same three
-// ports, plus the console publisher. The story's claim is that the use case
+// Three technologies - memory, JSON files and plain text files on disk -
+// behind the same three ports, plus the console and text file publishers. The story's claim is that the use case
 // cannot tell them apart, so the heart of this file is a *contract* that runs
 // unchanged against both repository pairs, and an end-to-end check that the
 // service produces the identical report over either storage.
@@ -10,7 +10,7 @@
 // scenario; the contract tests count for both repository specs.
 import { after, describe, mock, test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,6 +29,9 @@ import { InMemoryAccountRepository } from "../src/adapters/out/InMemoryAccountRe
 import { InMemoryFeeScheduleRepository } from "../src/adapters/out/InMemoryFeeScheduleRepository.ts";
 import { JsonFileAccountRepository } from "../src/adapters/out/JsonFileAccountRepository.ts";
 import { JsonFileFeeScheduleRepository } from "../src/adapters/out/JsonFileFeeScheduleRepository.ts";
+import { TextFileAccountRepository } from "../src/adapters/out/TextFileAccountRepository.ts";
+import { TextFileFeeScheduleRepository } from "../src/adapters/out/TextFileFeeScheduleRepository.ts";
+import { TextFileFeeReportPublisher } from "../src/adapters/out/TextFileFeeReportPublisher.ts";
 
 // --- fixture -----------------------------------------------------------------
 // Verbatim the fixture of calculate-fees.test.ts, and verbatim the content of
@@ -101,6 +104,35 @@ const jsonPair = (): RepositoryPair => ({
   accounts: new JsonFileAccountRepository(dataFile("accounts.json")),
   schedules: new JsonFileFeeScheduleRepository(dataFile("fee-schedules.json")),
 });
+const textPair = (): RepositoryPair => ({
+  accounts: new TextFileAccountRepository(dataFile("accounts.txt")),
+  schedules: new TextFileFeeScheduleRepository(dataFile("fee-schedules.txt")),
+});
+
+/** Scratch files under one temp directory, removed after the enclosing describe. */
+function scratchDir() {
+  let dir: string | undefined;
+  after(async () => {
+    if (dir !== undefined) await rm(dir, { recursive: true, force: true });
+  });
+  return {
+    path: async (name: string) => join((dir ??= await mkdtemp(join(tmpdir(), "hexa-lab-"))), name),
+    file: async function (name: string, content: string) {
+      const path = await this.path(name);
+      await writeFile(path, content, "utf8");
+      return path;
+    },
+  };
+}
+
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** Asserts the promise rejects with an Error whose message contains every part. */
+const rejectsMentioning = (promise: Promise<unknown>, ...parts: (string | RegExp)[]) =>
+  assert.rejects(promise, (err: unknown) => {
+    assert.ok(err instanceof Error);
+    for (const part of parts) assert.match(err.message, part instanceof RegExp ? part : new RegExp(escapeRegExp(part)));
+    return true;
+  });
 
 // =============================================================================
 describe("in-memory-repositories", () => {
@@ -176,14 +208,6 @@ describe("json-file-repositories", () => {
 
   // --- a bad file is an error, never "no data" --------------------------------
 
-  const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const rejectsMentioning = (promise: Promise<unknown>, ...parts: (string | RegExp)[]) =>
-    assert.rejects(promise, (err: unknown) => {
-      assert.ok(err instanceof Error);
-      for (const part of parts) assert.match(err.message, part instanceof RegExp ? part : new RegExp(escape(part)));
-      return true;
-    });
-
   test("a missing file rejects with the path in the message", async () => {
     const path = join(tmpdir(), "hexa-lab-does-not-exist.json");
     await rejectsMentioning(new JsonFileAccountRepository(path).findByHouseholdId("hh-1"), path);
@@ -232,6 +256,130 @@ describe("json-file-repositories", () => {
     ).execute(q1);
     assert.deepEqual(jsonReport, memoryReport);
     assert.equal(jsonReport.total, 14239.73);
+  });
+});
+
+// =============================================================================
+describe("text-file-repositories", () => {
+  repositoryContract("text-file", textPair);
+  const scratch = scratchDir();
+
+  test("hh-1 from data/accounts.txt yields acc-1, acc-2, acc-3 in file order", async () => {
+    const repo = new TextFileAccountRepository(dataFile("accounts.txt"));
+    assert.deepEqual(ids(await repo.findByHouseholdId("hh-1")), ["acc-1", "acc-2", "acc-3"]);
+  });
+
+  test("data/accounts.txt holds exactly the four blueprint accounts", async () => {
+    const repo = new TextFileAccountRepository(dataFile("accounts.txt"));
+    const all = [...(await repo.findByHouseholdId("hh-1")), ...(await repo.findByHouseholdId("hh-2"))];
+    assert.deepEqual(all, [acc1, acc2, acc3, acc4]);
+  });
+
+  test("blank lines, # comments and spaces around fields are ignored", async () => {
+    const path = await scratch.file("accounts.txt", "\n# a comment\n  acc-9|hh-9|  Nine Nine |1.5|standard  \r\n\n");
+    assert.deepEqual(await new TextFileAccountRepository(path).findByHouseholdId("hh-9"), [
+      { id: "acc-9", householdId: "hh-9", name: "Nine Nine", aum: 1.5, feeScheduleId: "standard" },
+    ]);
+  });
+
+  test("the file is read on every call, so a change shows up without a new instance", async () => {
+    const line = "acc-9 | hh-9 | Nine | 1 | standard\n";
+    const path = await scratch.file("changing.txt", line);
+    const repo = new TextFileAccountRepository(path);
+    assert.equal((await repo.findByHouseholdId("hh-9")).length, 1);
+    await writeFile(path, line + line.replace("acc-9", "acc-10"), "utf8");
+    assert.equal((await repo.findByHouseholdId("hh-9")).length, 2);
+  });
+
+  test("a missing file rejects with the path in the message", async () => {
+    const path = join(tmpdir(), "hexa-lab-does-not-exist.txt");
+    await rejectsMentioning(new TextFileAccountRepository(path).findByHouseholdId("hh-1"), path);
+  });
+
+  test("a line with the wrong number of fields rejects naming path:line", async () => {
+    const path = await scratch.file("short.txt", "# header\nacc-1 | hh-1 | Alpha | 2500000\n");
+    await rejectsMentioning(new TextFileAccountRepository(path).findByHouseholdId("hh-1"), `${path}:2`, "5 fields");
+  });
+
+  test("a non-numeric or empty aum rejects naming path:line and aum", async () => {
+    for (const aum of ["lots", ""]) {
+      const path = await scratch.file("aum.txt", `acc-1 | hh-1 | Alpha | ${aum} | standard\n`);
+      await rejectsMentioning(new TextFileAccountRepository(path).findByHouseholdId("hh-1"), `${path}:1`, "aum");
+    }
+  });
+
+  test("a schedule line with a malformed tier rejects naming path:line and the tier", async () => {
+    const path = await scratch.file("tiers.txt", "standard | Standard | 2500 | 1000000-100\n");
+    await rejectsMentioning(new TextFileFeeScheduleRepository(path).findById("standard"), `${path}:1`, "1000000-100");
+  });
+
+  test("a schedule with a non-numeric minimum or rate rejects naming the field", async () => {
+    const minimum = await scratch.file("minimum.txt", "standard | Standard | x | *@50\n");
+    await rejectsMentioning(new TextFileFeeScheduleRepository(minimum).findById("standard"), "minimumAnnualFee");
+    const rate = await scratch.file("rate.txt", "standard | Standard | 2500 | *@fifty\n");
+    await rejectsMentioning(new TextFileFeeScheduleRepository(rate).findById("standard"), "annualRateBps");
+  });
+
+  test("the use case gives the identical report over memory and over txt", async () => {
+    const overMemory = memoryPair();
+    const overText = textPair();
+    const memoryReport = await new CalculateHouseholdFeesService(
+      overMemory.accounts,
+      overMemory.schedules,
+      silentPublisher,
+    ).execute(q1);
+    const textReport = await new CalculateHouseholdFeesService(
+      overText.accounts,
+      overText.schedules,
+      silentPublisher,
+    ).execute(q1);
+    assert.deepEqual(textReport, memoryReport);
+    assert.equal(textReport.total, 14239.73);
+  });
+});
+
+// =============================================================================
+describe("text-file-report-publisher", () => {
+  const scratch = scratchDir();
+  const period = createBillingPeriod("2026-01-01", "2026-03-31");
+  const report = buildFeeReport("hh-1", period, [
+    { accountId: "acc-1", accountName: "Alpha", aum: 2_500_000, feeScheduleId: "standard", fee: 5239.73 },
+    { accountId: "acc-2", accountName: "Beta", aum: 150_000, feeScheduleId: "standard", fee: 616.44 },
+  ]);
+  const expectedBlock =
+    "household hh-1 | 2026-01-01..2026-03-31\n" +
+    "acc-1 | Alpha | 2500000 | standard | 5239.73\n" +
+    "acc-2 | Beta | 150000 | standard | 616.44\n" +
+    "total | 5856.17\n" +
+    "\n";
+
+  test("a report becomes one block in the documented format, creating the file", async () => {
+    const path = await scratch.path("created.txt");
+    assert.equal(await new TextFileFeeReportPublisher(path).publish(report), undefined);
+    assert.equal(await readFile(path, "utf8"), expectedBlock);
+  });
+
+  test("every publish appends; earlier content is kept", async () => {
+    const path = await scratch.file("appended.txt", "earlier\n");
+    const publisher = new TextFileFeeReportPublisher(path);
+    await publisher.publish(report);
+    await publisher.publish(report);
+    assert.equal(await readFile(path, "utf8"), "earlier\n" + expectedBlock + expectedBlock);
+  });
+
+  test("an unwritable path rejects with the path in the message", async () => {
+    const path = join(await scratch.path("no-such-dir"), "reports.txt");
+    await rejectsMentioning(new TextFileFeeReportPublisher(path).publish(report), path);
+  });
+
+  test("the use case publishes the report it returns", async () => {
+    const path = await scratch.path("use-case.txt");
+    const { accounts, schedules } = memoryPair();
+    const returned = await new CalculateHouseholdFeesService(accounts, schedules, new TextFileFeeReportPublisher(path)).execute(q1);
+    const written = await readFile(path, "utf8");
+    assert.ok(written.startsWith("household hh-1 | 2026-01-01..2026-03-31\n"), written);
+    assert.ok(written.endsWith(`total | ${returned.total}\n\n`), written);
+    assert.equal(written.split("\n").length, 2 + returned.lines.length + 2);
   });
 });
 

@@ -168,4 +168,15 @@ EPIC-3  Web UI: малък, но хубав
     TASK-3.3.2  Демо и pack
       SUB-3.3.2.1  pack включва ui/
       SUB-3.3.2.2  Ръчна приемка
+EPIC-4  Текстови файлове като driven адаптери
+  STORY-4.1  TextFile адаптери за трите outbound порта
+    TASK-4.1.1  TextFile репозиторита
+      SUB-4.1.1.1  TextFileAccountRepository
+      SUB-4.1.1.2  TextFileFeeScheduleRepository
+      SUB-4.1.1.3  data/accounts.txt и data/fee-schedules.txt
+    TASK-4.1.2  TextFileFeeReportPublisher
+      SUB-4.1.2.1  Формат на блока
+    TASK-4.1.3  Връзване в bootstrap и README
+      SUB-4.1.3.1  compose.ts
+      SUB-4.1.3.2  README
 ```
