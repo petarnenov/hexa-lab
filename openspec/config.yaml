@@ -14,7 +14,7 @@ context: |
     - domain/        чиста логика, без I/O; импортира само domain/
     - application/   use cases + портове (in/out); импортира domain/ и application/
     - adapters/in/   driving адаптери: CLI, HTTP; не импортират adapters/out
-    - adapters/out/  driven адаптери: memory, json file repos, console publisher
+    - adapters/out/  driven адаптери: memory, json/txt file repos, console/txt publisher
     - bootstrap/     composition root; единственият слой, който вижда всичко
   Правилото за зависимостите се пази от test/architecture.test.ts.
 

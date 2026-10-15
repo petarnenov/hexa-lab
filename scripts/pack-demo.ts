@@ -38,6 +38,8 @@ const EXCLUDED_DIRS = new Set([".git", "node_modules"]);
 // Directories excluded by repo-relative path, the way .gitignore lists them:
 const EXCLUDED_PATHS = new Set(["ui/dist"]);
 const EXCLUDED_FILES = new Set([".DS_Store"]);
+// Files excluded by repo-relative path: the report log PUBLISHER=txt appends to by default.
+const EXCLUDED_FILE_PATHS = new Set(["data/fee-reports.txt"]);
 const EXCLUDED_SUFFIXES = [".bak", ".tsbuildinfo", ".log", ".tar.gz"];
 // `session-report-*.html` in .gitignore: usage reports a Claude Code plugin drops in the repo root.
 const isSessionReport = (name: string) => name.startsWith("session-report-") && name.endsWith(".html");
@@ -59,7 +61,7 @@ function walk(dir: string): string[] {
     const repoPath = relative(ROOT, absolute).split("\\").join("/");
     if (entry.isDirectory()) {
       if (!EXCLUDED_DIRS.has(entry.name) && !EXCLUDED_PATHS.has(repoPath)) files.push(...walk(absolute));
-    } else if (entry.isFile() && !isExcludedFile(entry.name, absolute)) {
+    } else if (entry.isFile() && !isExcludedFile(entry.name, absolute) && !EXCLUDED_FILE_PATHS.has(repoPath)) {
       files.push(repoPath);
     }
   }

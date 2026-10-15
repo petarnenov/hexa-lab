@@ -18,7 +18,9 @@ import { fileURLToPath } from "node:url";
 
 import type { CalculateHouseholdFeesCommand } from "../src/application/ports/in/CalculateHouseholdFees.ts";
 import { HouseholdNotFound } from "../src/domain/errors.ts";
-import { composeApp, dataDirFrom } from "../src/bootstrap/compose.ts";
+import { composeApp, dataDirFrom, reportFileFrom } from "../src/bootstrap/compose.ts";
+import { TextFileAccountRepository } from "../src/adapters/out/TextFileAccountRepository.ts";
+import { TextFileFeeScheduleRepository } from "../src/adapters/out/TextFileFeeScheduleRepository.ts";
 import { seedAccounts, seedFeeSchedules } from "../src/bootstrap/seed.ts";
 
 /** Parsed content of a file under data/ - independent of the process cwd. */
@@ -74,6 +76,14 @@ describe("composition-root", () => {
       assert.deepEqual(stderr.lines.filter((l) => l.startsWith("[bootstrap]")), ["[bootstrap] STORAGE=json\n"]);
     });
 
+    test("STORAGE=txt reads data/*.txt and yields the identical report", async () => {
+      const stderr = sink();
+      const memory = await composeApp({}, sink()).execute(q1);
+      const txt = await composeApp({ STORAGE: "txt" }, stderr).execute(q1);
+      assert.deepEqual(txt, memory);
+      assert.deepEqual(stderr.lines.filter((l) => l.startsWith("[bootstrap]")), ["[bootstrap] STORAGE=txt\n"]);
+    });
+
     test("an unknown STORAGE throws synchronously, naming the value and the allowed ones", () => {
       const stderr = sink();
       assert.throws(
@@ -84,6 +94,7 @@ describe("composition-root", () => {
           assert.match(error.message, /sqlite/);
           assert.match(error.message, /memory/);
           assert.match(error.message, /json/);
+          assert.match(error.message, /txt/);
           return true;
         },
       );
@@ -102,6 +113,51 @@ describe("composition-root", () => {
       } finally {
         stdoutWrite.mock.restore();
       }
+    });
+  });
+
+  describe("PUBLISHER selects the publisher, console by default", () => {
+    test("PUBLISHER=txt appends to REPORT_FILE instead of the stderr line", async () => {
+      const dir = await mkdtemp(join(tmpdir(), "hexa-lab-reports-"));
+      after(() => rm(dir, { recursive: true, force: true }));
+      const reportFile = join(dir, "reports.txt");
+      const stderr = sink();
+      const report = await composeApp({ PUBLISHER: "txt", REPORT_FILE: reportFile }, stderr).execute(q1);
+      assert.deepEqual(stderr.lines, [
+        "[bootstrap] STORAGE=memory\n",
+        `[bootstrap] PUBLISHER=txt REPORT_FILE=${reportFile}\n`,
+      ]);
+      const written = await readFile(reportFile, "utf8");
+      assert.ok(written.startsWith("household hh-1 | 2026-01-01..2026-03-31\n"), written);
+      assert.ok(written.endsWith(`total | ${report.total}\n\n`), written);
+    });
+
+    test("PUBLISHER=console and PUBLISHER='' are the console line", async () => {
+      for (const PUBLISHER of ["console", ""]) {
+        const stderr = sink();
+        await composeApp({ PUBLISHER }, stderr).execute(q1);
+        assert.equal(stderr.lines.length, 2);
+        assert.ok(stderr.lines[1]!.startsWith("[publish] household hh-1 "));
+      }
+    });
+
+    test("REPORT_FILE defaults to fee-reports.txt in the data directory", () => {
+      assert.equal(reportFileFrom({}), join(dataDirFrom({}), "fee-reports.txt"));
+      assert.equal(reportFileFrom({ DATA_DIR: "/x" }), join("/x", "fee-reports.txt"));
+      assert.equal(reportFileFrom({ DATA_DIR: "/x", REPORT_FILE: "/y/r.txt" }), "/y/r.txt");
+    });
+
+    test("an unknown PUBLISHER throws synchronously, naming the value and the allowed ones", () => {
+      const stderr = sink();
+      assert.throws(
+        () => composeApp({ PUBLISHER: "email" }, stderr),
+        (error: unknown) => {
+          assert.ok(error instanceof Error);
+          for (const word of ["PUBLISHER", "email", "console", "txt"]) assert.match(error.message, new RegExp(word));
+          return true;
+        },
+      );
+      assert.deepEqual(stderr.lines, []);
     });
   });
 
@@ -154,7 +210,7 @@ describe("composition-root", () => {
     });
   });
 
-  describe("seed data mirrors data/*.json", () => {
+  describe("seed data mirrors data/*.json and data/*.txt", () => {
     // The seed is a deliberate duplicate of the JSON files (design.md D4);
     // this is the test that keeps the duplicate honest. deepEqual names the
     // first differing field, so an edit to one side fails with a pointer to
@@ -165,6 +221,20 @@ describe("composition-root", () => {
 
     test("seedFeeSchedules equals data/fee-schedules.json", async () => {
       assert.deepEqual(seedFeeSchedules, await readData("fee-schedules.json"));
+    });
+
+    // data/*.txt is a third copy; read through the txt adapters, since the
+    // repositories have no "list all" - every household and every seed id.
+    test("seedAccounts equals data/accounts.txt", async () => {
+      const repo = new TextFileAccountRepository(fileURLToPath(new URL("../data/accounts.txt", import.meta.url)));
+      const households = [...new Set(seedAccounts.map((a) => a.householdId))];
+      const all = (await Promise.all(households.map((h) => repo.findByHouseholdId(h)))).flat();
+      assert.deepEqual(all, seedAccounts);
+    });
+
+    test("seedFeeSchedules equals data/fee-schedules.txt", async () => {
+      const repo = new TextFileFeeScheduleRepository(fileURLToPath(new URL("../data/fee-schedules.txt", import.meta.url)));
+      assert.deepEqual(await Promise.all(seedFeeSchedules.map((s) => repo.findById(s.id))), seedFeeSchedules);
     });
   });
 });
@@ -179,13 +249,13 @@ const HTTP_MAIN = "src/bootstrap/http.main.ts";
 const Q1_ARGS = ["hh-1", "2026-01-01", "2026-03-31"];
 
 /**
- * The child's environment: the parent's, minus the three variables this
+ * The child's environment: the parent's, minus the variables this
  * project reads, plus whatever the test sets. Without the minus, a developer
  * running `STORAGE=json npm test` would silently turn the memory scenarios
  * into json ones.
  */
 function childEnv(overrides: Record<string, string> = {}): NodeJS.ProcessEnv {
-  const { STORAGE: _s, DATA_DIR: _d, PORT: _p, ...rest } = process.env;
+  const { STORAGE: _s, DATA_DIR: _d, PORT: _p, PUBLISHER: _pb, REPORT_FILE: _r, ...rest } = process.env;
   return { ...rest, ...overrides };
 }
 
@@ -274,6 +344,14 @@ describe("entry-points", () => {
       assert.equal(json.code, 0, json.stderr);
       assert.equal(json.stdout, memory.stdout);
       assert.match(json.stderr, /^\[bootstrap\] STORAGE=json$/m);
+    });
+
+    test("txt: byte for byte the same stdout, STORAGE=txt in the log", async () => {
+      const memory = await runMain(CLI_MAIN, [...Q1_ARGS, "--json"], childEnv());
+      const txt = await runMain(CLI_MAIN, [...Q1_ARGS, "--json"], childEnv({ STORAGE: "txt" }));
+      assert.equal(txt.code, 0, txt.stderr);
+      assert.equal(txt.stdout, memory.stdout);
+      assert.match(txt.stderr, /^\[bootstrap\] STORAGE=txt$/m);
     });
 
     test("usage error exits 2", async () => {

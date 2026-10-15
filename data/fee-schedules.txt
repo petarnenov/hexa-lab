@@ -1,0 +1,5 @@
+# Fee schedules for STORAGE=txt - the same data as fee-schedules.json.
+# tiers: upTo@annualRateBps, comma-separated, ascending; * = no upper bound (last only).
+# id     | name     | minimumAnnualFee | tiers
+standard | Standard | 2500             | 1000000@100, 5000000@75, *@50
+premium  | Premium  | 5000             | *@85

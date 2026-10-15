@@ -17,3 +17,6 @@ hexa.tar.gz
 
 # Vite build output of the ui/ package (ui/node_modules/ is covered by node_modules/ above)
 ui/dist/
+
+# Reports appended by PUBLISHER=txt (default REPORT_FILE)
+data/fee-reports.txt

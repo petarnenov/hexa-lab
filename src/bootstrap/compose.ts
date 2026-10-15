@@ -1,7 +1,7 @@
 // compose - the composition root.
 //
 // This is the one file in src/ that knows every concrete class: the service,
-// the three driven adapters, the seed. Everything else sees only ports. The
+// every driven adapter, the seed. Everything else sees only ports. The
 // dependency rule (test/architecture.test.ts) lets bootstrap import all four
 // layers precisely so that nobody else has to.
 //
@@ -16,12 +16,16 @@ import { join } from "node:path";
 import type { CalculateHouseholdFees } from "../application/ports/in/CalculateHouseholdFees.ts";
 import type { AccountRepository } from "../application/ports/out/AccountRepository.ts";
 import type { FeeScheduleRepository } from "../application/ports/out/FeeScheduleRepository.ts";
+import type { FeeReportPublisher } from "../application/ports/out/FeeReportPublisher.ts";
 import { CalculateHouseholdFeesService } from "../application/CalculateHouseholdFeesService.ts";
 import { ConsoleFeeReportPublisher, type LineSink } from "../adapters/out/ConsoleFeeReportPublisher.ts";
 import { InMemoryAccountRepository } from "../adapters/out/InMemoryAccountRepository.ts";
 import { InMemoryFeeScheduleRepository } from "../adapters/out/InMemoryFeeScheduleRepository.ts";
 import { JsonFileAccountRepository } from "../adapters/out/JsonFileAccountRepository.ts";
 import { JsonFileFeeScheduleRepository } from "../adapters/out/JsonFileFeeScheduleRepository.ts";
+import { TextFileAccountRepository } from "../adapters/out/TextFileAccountRepository.ts";
+import { TextFileFeeReportPublisher } from "../adapters/out/TextFileFeeReportPublisher.ts";
+import { TextFileFeeScheduleRepository } from "../adapters/out/TextFileFeeScheduleRepository.ts";
 import { seedAccounts, seedFeeSchedules } from "./seed.ts";
 
 /**
@@ -40,7 +44,7 @@ export type Env = Readonly<Record<string, string | undefined>>;
 const DEFAULT_DATA_DIR = fileURLToPath(new URL("../../data/", import.meta.url));
 
 /**
- * The directory the json storage reads from: `DATA_DIR` when set and
+ * The directory the json and txt storages read from: `DATA_DIR` when set and
  * non-empty, else the project's data/. A relative DATA_DIR is relative to the
  * process cwd, as any env path would be. Whether the directory exists is not
  * checked here - the JSON repositories fail with the full path in the message
@@ -54,34 +58,75 @@ export function dataDirFrom(env: Env): string {
 
 type Repositories = { accounts: AccountRepository; schedules: FeeScheduleRepository };
 
+const STORAGES = ["memory", "json", "txt"] as const;
+const PUBLISHERS = ["console", "txt"] as const;
+
 /**
- * Builds the use case for the storage named by `env.STORAGE`.
+ * The file `PUBLISHER=txt` appends reports to: `REPORT_FILE` when set and
+ * non-empty, else `fee-reports.txt` in the data directory (git-ignored).
+ * Exported for tests, like dataDirFrom.
+ */
+export function reportFileFrom(env: Env): string {
+  return env.REPORT_FILE || join(dataDirFrom(env), "fee-reports.txt");
+}
+
+/**
+* Builds the use case for the storage named by `env.STORAGE` and the
+ * publisher named by `env.PUBLISHER`.
  *
  * The return type is the *port*, not `CalculateHouseholdFeesService`: the
  * entry points - and a future MCP adapter (EPIC-2) - get exactly what the
  * HTTP and CLI adapters ask for, and nothing they could reach past.
  *
  * `||` rather than `??` on purpose: `STORAGE=` in a shell is an empty string
- * and means "not set". Validation runs before the log line and before any
- * adapter is built, synchronously: an unknown value produces one error and
- * nothing else. It is a plain Error, not a DomainError - a misconfigured
- * process is not a business fact, and the CLI adapter would (rightly) refuse
- * to translate it anyway.
+ * and means "not set". Both values are validated before the log line and
+ * before any adapter is built, synchronously: an unknown value produces one
+ * error and nothing else. It is a plain Error, not a DomainError - a
+ * misconfigured process is not a business fact, and the CLI adapter would
+ * (rightly) refuse to translate it anyway.
  *
  * `LineSink` is reused from the console publisher: bootstrap may import
  * adapters/out, unlike adapters/in, which had to duplicate the type (1.7).
- * One sink carries both the bootstrap line and the publisher's line, so a
- * test sees them together and `process.stdout` stays untouched.
+ * One sink carries both the bootstrap lines and the publisher's line, so a
+ * test sees them together and `process.stdout` stays untouched. The
+ * `PUBLISHER` line is written only for the non-default `txt`, so the default
+ * log stays the single `STORAGE` line.
  */
 export function composeApp(env: Env = process.env, stderr: LineSink = process.stderr): CalculateHouseholdFees {
   const storage = env.STORAGE || "memory";
-  if (storage !== "memory" && storage !== "json") {
-    throw new Error(`STORAGE must be one of memory, json (got "${storage}")`);
+  if (!isOneOf(STORAGES, storage)) {
+    throw new Error(`STORAGE must be one of ${STORAGES.join(", ")} (got "${storage}")`);
+  }
+  const publisherName = env.PUBLISHER || "console";
+  if (!isOneOf(PUBLISHERS, publisherName)) {
+    throw new Error(`PUBLISHER must be one of ${PUBLISHERS.join(", ")} (got "${publisherName}")`);
   }
   stderr.write(`[bootstrap] STORAGE=${storage}\n`);
 
-  const { accounts, schedules } = storage === "json" ? jsonRepositories(dataDirFrom(env)) : memoryRepositories();
-  return new CalculateHouseholdFeesService(accounts, schedules, new ConsoleFeeReportPublisher(stderr));
+  let publisher: FeeReportPublisher = new ConsoleFeeReportPublisher(stderr);
+  if (publisherName === "txt") {
+    const reportFile = reportFileFrom(env);
+    stderr.write(`[bootstrap] PUBLISHER=txt REPORT_FILE=${reportFile}\n`);
+    publisher = new TextFileFeeReportPublisher(reportFile);
+  }
+
+  const { accounts, schedules } = repositoriesFor(storage, env);
+  return new CalculateHouseholdFeesService(accounts, schedules, publisher);
+}
+
+function isOneOf<T extends string>(allowed: readonly T[], value: string): value is T {
+  return (allowed as readonly string[]).includes(value);
+}
+
+function repositoriesFor(storage: (typeof STORAGES)[number], env: Env): Repositories {
+  switch (storage) {
+    case "memory":
+      return memoryRepositories();
+    case "json":
+      return jsonRepositories(dataDirFrom(env));
+    case "txt":
+      return textRepositories(dataDirFrom(env));
+  }
 }
 
 function memoryRepositories(): Repositories {
@@ -97,5 +142,14 @@ function jsonRepositories(dir: string): Repositories {
   return {
     accounts: new JsonFileAccountRepository(join(dir, "accounts.json")),
     schedules: new JsonFileFeeScheduleRepository(join(dir, "fee-schedules.json")),
+  };
+}
+
+// Same lazy reading as the JSON pair: a missing file surfaces at the first
+// `execute`, with `<path>:<line>` for a malformed line.
+function textRepositories(dir: string): Repositories {
+  return {
+    accounts: new TextFileAccountRepository(join(dir, "accounts.txt")),
+    schedules: new TextFileFeeScheduleRepository(join(dir, "fee-schedules.txt")),
   };
 }

@@ -50,13 +50,14 @@ imports: the outside depends on the inside, never the other way round.
          ┌─────────┴──────────┐   ┌──────────┴─────────┐
          │ src/adapters/out/  │   │ src/adapters/out/  │
          │ InMemory*.ts       │   │ JsonFile*.ts       │
-         │ Console…Publisher  │   │                    │
+         │ Console…Publisher  │   │ TextFile*.ts       │
          └────────────────────┘   └────────────────────┘
                       driven (out) adapters
 
   src/bootstrap/compose.ts - the composition root: the only file that
-  sees every box above. STORAGE=memory|json decides which driven
-  adapters go behind the outbound ports; the use case never knows.
+  sees every box above. STORAGE=memory|json|txt and PUBLISHER=console|txt
+  decide which driven adapters go behind the outbound ports; the use case
+  never knows.
 ```
 
 | layer | folder | may import |
@@ -219,12 +220,14 @@ The root `npm test` and `test/architecture.test.ts` never look at it.
 
 ### Switching storage
 
-Three environment variables, all read in `src/bootstrap/`:
+Five environment variables, all read in `src/bootstrap/`:
 
 | variable | default | meaning |
 | --- | --- | --- |
-| `STORAGE` | `memory` | `memory` (seed data in `src/bootstrap/seed.ts`) or `json` (reads `data/*.json` on every call) |
-| `DATA_DIR` | `<repo>/data/` | where the `json` storage looks for `accounts.json` and `fee-schedules.json` |
+| `STORAGE` | `memory` | `memory` (seed data in `src/bootstrap/seed.ts`), `json` (reads `data/*.json` on every call) or `txt` (reads `data/*.txt` on every call) |
+| `DATA_DIR` | `<repo>/data/` | where the `json` / `txt` storage looks for `accounts.*` and `fee-schedules.*` |
+| `PUBLISHER` | `console` | `console` (one `[publish]` line on stderr) or `txt` (appends each report to `REPORT_FILE`) |
+| `REPORT_FILE` | `<DATA_DIR>/fee-reports.txt` | where `PUBLISHER=txt` appends; the default is git-ignored |
 | `PORT` | `3000` | HTTP only |
 
 ```sh
@@ -233,12 +236,43 @@ STORAGE=json PORT=3001 npm run http
 ```
 
 Nothing under `src/domain/`, `src/application/` or `src/adapters/in/`
-changes between the two: `compose.ts` builds a different pair of
+changes between them: `compose.ts` builds a different pair of
 repositories behind the same two outbound ports, and the use case cannot
 tell. Any other value (`STORAGE=sqlite`, say) stops the process before
 anything listens, with the allowed values in the message. Edit
 `data/accounts.json` and run again with `STORAGE=json` to see the json
 adapter is really reading the file.
+
+### Plain text files
+
+`STORAGE=txt` reads the same data from two text files you can edit in any
+editor - one record per line, fields separated by `|`, blank lines and `#`
+comments ignored:
+
+```
+# data/accounts.txt
+acc-1 | hh-1 | Alpha | 2500000 | standard
+
+# data/fee-schedules.txt - tiers are upTo@annualRateBps, * = no upper bound
+standard | Standard | 2500 | 1000000@100, 5000000@75, *@50
+```
+
+A malformed line stops the request with `<file>:<line>` in the message.
+`PUBLISHER=txt` swaps the third port's adapter: instead of the `[publish]`
+line on stderr, every report is appended to `REPORT_FILE` as one block.
+
+```sh
+STORAGE=txt PUBLISHER=txt npm run cli -- hh-1 2026-01-01 2026-03-31
+cat data/fee-reports.txt
+```
+
+```
+household hh-1 | 2026-01-01..2026-03-31
+acc-1 | Alpha | 2500000 | standard | 5239.73
+acc-2 | Beta | 150000 | standard | 616.44
+acc-3 | Gamma | 4000000 | premium | 8383.56
+total | 14239.73
+```
 
 ### Demo: same total, five ways
 
